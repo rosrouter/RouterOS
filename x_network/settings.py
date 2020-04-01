@@ -84,6 +84,13 @@ DATABASES = {
         'USER': 'pgros',
         'PASSWORD': 'rosrouter',
         'HOST': '172.17.0.11',
+<<<<<<< HEAD
+=======
+        # 'NAME': 'ros',
+        # 'USER': 'yyy',
+        # 'PASSWORD': 'yyy.1234',
+        # 'HOST': '118.190.88.165',
+>>>>>>> master
         'PORT': 5432,
     },
 }
