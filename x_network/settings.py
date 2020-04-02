@@ -8,6 +8,10 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import djcelery
+from celery.schedules import crontab, timedelta
+from kombu import Exchange, Queue
+from .celery import app
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,6 +41,8 @@ INSTALLED_APPS = [
     'xadmin',
     'crispy_forms',
     'reversion',
+    'celery',
+    'djcelery',
     # 子应用
     'network',
 ]
@@ -125,3 +131,90 @@ USE_TZ = True
 STATIC_URL = '/static/'
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(SITE_ROOT, 'collectedstatic')
+
+
+#celery
+
+
+djcelery.setup_loader()
+BROKER_URL = 'amqp://admin:ros@locaalhost:5672//'
+CELERY_RESULT_BACKEND = 'redis://:ros@localhost/1'
+CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_IMPORTS = ('network.tasks')
+CELERY_TIMEZONE = 'Asia/Shanghai'
+
+app.conf.task_routes = {
+}
+CELERYBEAT_SCHEDULE = {
+}
+
+
+#logging
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(levelname)s %(asctime)s %(pathname)s:%(lineno)s %(process)d %(thread)d %(message)s"
+        },
+        "simple": {
+            "format": "%(levelname)s %(message)s"
+        },
+    },
+    "filters": {},
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "filters": [],
+            "class": "logging.StreamHandler",
+            "formatter": "verbose"
+        },
+        "default": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "/var/log/x_network.log",
+            "maxBytes": 1024 * 1024 * 50,  # 50M
+            "backupCount": 2,
+            "formatter": "verbose",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "filters": [],
+        },
+        # "syslog": {
+        #     'level': 'INFO',
+        #     'class': 'logging.handlers.SysLogHandler',
+        #     'formatter': 'simple',
+        #     'facility': 'local4',
+        #     'address': '/dev/log',
+        # },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "default"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["console", "default"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "network": {
+            "handlers": ["console", "default"],
+            "level": "INFO",
+            "filters": []
+        },
+        # "rsyslog": {
+        #     "handlers": ["syslog", ],
+        #     "level": "INFO",
+        #     'propagate': True,
+        # }
+
+    }
+}
