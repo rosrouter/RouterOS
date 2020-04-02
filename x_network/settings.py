@@ -137,7 +137,7 @@ STATIC_ROOT = os.path.join(SITE_ROOT, 'collectedstatic')
 
 
 djcelery.setup_loader()
-BROKER_URL = 'amqp://admin:ros@locaalhost:5672//'
+BROKER_URL = 'amqp://admin:ros@localhost:5672//'
 CELERY_RESULT_BACKEND = 'redis://:ros@localhost/1'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 CELERY_TASK_SERIALIZER = 'json'
