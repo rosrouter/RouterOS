@@ -18,13 +18,13 @@ xadmin.site.register(views.BaseAdminView, BaseSetting)
 
 
 class VPNAdmin(object):
-    list_display = ['vpn_user', 'vpn_pwd', 'status']
-
-    list_filter = []
+    list_display = ['vpn_user', 'vpn_pwd', 'status', 'up_time']
+    list_filter = ['vpn_user']
     search_fields = []
     actions = []  # 执行操作
     preserve_filters = True
     list_editable = []  # 可直接编辑
+    list_per_page = 15 # 分页
 
     def queryset(self):
         """函数作用：使当前登录的用户只能看到自己负责的设备"""
