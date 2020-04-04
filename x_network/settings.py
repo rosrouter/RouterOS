@@ -8,10 +8,10 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-import djcelery
-from celery.schedules import crontab, timedelta
-from kombu import Exchange, Queue
-from .celery import app
+# import djcelery
+# from celery.schedules import crontab, timedelta
+# from kombu import Exchange, Queue
+# from .celery import app
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,7 +22,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '(r(zxi)ta$ie-ci8e_jwa)k#kn^p-ze942q5@hvyf6n=gd_+^-'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -135,19 +134,19 @@ STATIC_ROOT = os.path.join(SITE_ROOT, 'collectedstatic')
 # celery
 
 
-djcelery.setup_loader()
-BROKER_URL = 'amqp://admin:ros@localhost:5672//'
-CELERY_RESULT_BACKEND = 'redis://:ros@localhost/1'
-CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_IMPORTS = ('network.tasks')
-CELERY_TIMEZONE = 'Asia/Shanghai'
-
-app.conf.task_routes = {
-}
-CELERYBEAT_SCHEDULE = {
-}
+# djcelery.setup_loader()
+# BROKER_URL = 'amqp://admin:ros@localhost:5672//'
+# CELERY_RESULT_BACKEND = 'redis://:ros@localhost/1'
+# CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_IMPORTS = ('network.tasks')
+# CELERY_TIMEZONE = 'Asia/Shanghai'
+#
+# app.conf.task_routes = {
+# }
+# CELERYBEAT_SCHEDULE = {
+# }
 
 # logging
 
