@@ -132,8 +132,7 @@ STATIC_URL = '/static/'
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(SITE_ROOT, 'collectedstatic')
 
-
-#celery
+# celery
 
 
 djcelery.setup_loader()
@@ -150,8 +149,7 @@ app.conf.task_routes = {
 CELERYBEAT_SCHEDULE = {
 }
 
-
-#logging
+# logging
 
 
 LOGGING = {

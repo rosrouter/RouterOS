@@ -1,4 +1,3 @@
-from xadmin.plugins.actions import BaseActionView
 import xadmin
 from xadmin import views
 from network.models import RosRouter, UserManage, VPNInfo
@@ -7,7 +6,6 @@ from network.models import RosRouter, UserManage, VPNInfo
 class GlobalSetting(object):
     site_title = '网络设备管理系统'
     site_footer = 'Design by yyy'
-    # menu_style = "accordion"  # 菜单可折叠
 
 
 class BaseSetting(object):

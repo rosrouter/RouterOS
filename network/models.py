@@ -22,6 +22,7 @@ class VPNInfo(models.Model):
     vpn_user = models.CharField(verbose_name='VPN用户名', max_length=60, null=False, default='')
     vpn_pwd = models.CharField(verbose_name='VPN密码', max_length=60, null=False, default='')
     status = models.BooleanField(verbose_name='VPN状态', null=False, default=False)
+    online_time = models.CharField(verbose_name='在线时间', max_length=60, null=False, blank=True, default='')
 
     class Meta:
         verbose_name = "VPN信息"
