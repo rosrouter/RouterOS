@@ -26,11 +26,13 @@ class VPNAdmin(object):
     preserve_filters = True
     list_editable = []  # 可直接编辑
     list_per_page = 15  # 分页
+    exclude = ['ros', 'up_time', 'status']
 
     def queryset(self):
         """函数作用：使当前登录的用户只能看到自己负责的设备"""
         qs = super(VPNAdmin, self).queryset()
         if self.request.user.is_superuser:
+            self.list_display = ['vpn_user', 'vpn_pwd', 'status', 'up_time', 'ros']
             return qs
         return VPNInfo.objects.filter(ros__usermanage__user=self.request.user)
 
@@ -38,8 +40,10 @@ class VPNAdmin(object):
         """在增加或者修改vpn信息的时候触发"""
         obj = self.new_obj
         if obj.id is None:  # 新增的时候
+            self.new_obj.ros = self.request.user.usermanage.device.ip  # 绑定用户管理的ros设备
             print('create a new vpn')
         else:  # 修改的时候
+            print(self.new_obj.ros)
             print('update a vpn info')
         super(VPNAdmin, self).save_models()
 

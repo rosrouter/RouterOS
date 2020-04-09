@@ -31,10 +31,11 @@ class VPNInfo(models.Model):
 
 
 class UserManage(models.Model):
-    user = models.ForeignKey(User, verbose_name='系统用户', blank=True, on_delete=False)
-    device = models.ManyToManyField(RosRouter, verbose_name='下属ros路由器', blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)  # 绑定user的唯一性
+    device = models.ForeignKey(RosRouter, verbose_name='下属ros路由器', blank=True, on_delete=False)
 
     class Meta:
         verbose_name = "用户管理设备"
         verbose_name_plural = verbose_name
         db_table = "user_manage"
+        unique_together = ('user', 'device',)  # 绑定user和device组合的唯一性（其实没必要了）
