@@ -144,8 +144,14 @@ CELERY_IMPORTS = ('network.tasks')
 CELERY_TIMEZONE = 'Asia/Shanghai'
 
 app.conf.task_routes = {
+'tasks.test': {'queue': 'taskstest'}
 }
 CELERYBEAT_SCHEDULE = {
+'taskstest': {
+        "task": "network.tasks.query_tasks",
+        "schedule": timedelta(minutes=3),
+        "args": ()
+    },
 }
 
 # logging

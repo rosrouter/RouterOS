@@ -2,6 +2,7 @@ import xadmin
 from xadmin import views
 from network.models import RosRouter, UserManage, VPNInfo
 import logging
+import paramiko
 
 
 class GlobalSetting(object):
