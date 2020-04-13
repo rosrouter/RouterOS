@@ -41,10 +41,27 @@ class VPNAdmin(object):
         """在增加或者修改vpn信息的时候触发"""
         obj = self.new_obj
         if obj.id is None:  # 新增的时候
-            self.new_obj.ros = self.request.user.usermanage.device.ip  # 绑定用户管理的ros设备
+            self.new_obj.ros = self.request.user.usermanage.device  # 绑定用户管理的ros设备
+            ros = self.new_obj.ros
+            print(f'ros_ip:{ros.ip}')
+            print(f'ros_user:{ros.ros_user}')
+            print(f'ros_pwd:{ros.ros_pwd}')
+            # vpn账号信息
+            print(f'vpn_user:{obj.vpn_user}')
+            print(f'vpn_pwd:{obj.vpn_pwd}')
+            print(type(self.new_obj.ros))
             print('create a new vpn')
         else:  # 修改的时候
-            print(self.new_obj.ros)
+            # 获取关联ros设备
+            ros = self.new_obj.ros
+            # ros 设备信息
+            print(f'ros_ip:{ros.ip}')
+            print(f'ros_user:{ros.ros_user}')
+            print(f'ros_pwd:{ros.ros_pwd}')
+            # vpn账号信息
+            print(f'vpn_user:{obj.vpn_user}')
+            print(f'vpn_pwd:{obj.vpn_pwd}')
+            print(type(self.new_obj.ros))
             print('update a vpn info')
         super(VPNAdmin, self).save_models()
 
