@@ -1,5 +1,6 @@
 from x_network.celery import app
-from network.worker.l2tp_vpn_info import tasks_test
-@app.task(queue='taskstest')
-def query_tasks():
-    tasks_test()
+from network.worker.l2tp_vpn_info import l2tp
+
+@app.task(queue='l2tp_vpn_scan')
+def l2tp_vpn_scan():
+    l2tp()

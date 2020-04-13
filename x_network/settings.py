@@ -144,12 +144,12 @@ CELERY_IMPORTS = ('network.tasks')
 CELERY_TIMEZONE = 'Asia/Shanghai'
 
 app.conf.task_routes = {
-'tasks.test': {'queue': 'taskstest'}
+'tasks.l2tp_vpn_scan': {'queue': 'l2tp_vpn_scan'}
 }
 CELERYBEAT_SCHEDULE = {
-'taskstest': {
-        "task": "network.tasks.query_tasks",
-        "schedule": timedelta(minutes=3),
+'l2tp_vpn_scan': {
+        "task": "network.tasks.l2tp_vpn_scan",
+        "schedule": timedelta(hours=1),
         "args": ()
     },
 }
