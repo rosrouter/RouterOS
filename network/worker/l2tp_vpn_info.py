@@ -25,7 +25,7 @@ def scan_vpn():
             # 获取在线用户和时长,字典 key 为用户，value为在线时长
             active_vpn = dict(active_pattern.findall(output_active))
         except Exception as error:
-            logging.error(f'Device:{ros.ip} with {error}')
+            logging.error(f'{ros.ip}:{error}')
             continue
         for user, pwd in all_vpns.items():
             vpn_info = {}
@@ -44,16 +44,7 @@ def scan_vpn():
             # 检查是否符合模型要求
             if vpn_ser.is_valid():
                 vpn_ser.save()
-                logging.info('Task Success!')
             else:
                 logging.error(f'Device:{ros.ip} with {vpn_ser.errors}')
-
-
 def l2tp():
     scan_vpn()
-
-# def test():
-#     print(1)
-#     return True
-# def tasks_test():
-#     test()
