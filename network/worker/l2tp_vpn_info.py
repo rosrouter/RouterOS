@@ -44,9 +44,10 @@ def scan_vpn():
             # 检查是否符合模型要求
             if vpn_ser.is_valid():
                 vpn_ser.save()
+                logging.info('Task Success!')
             else:
                 logging.error(f'Device:{ros.ip} with {vpn_ser.errors}')
-    logging.info('Task Success!')
+
 
 def l2tp():
     scan_vpn()
