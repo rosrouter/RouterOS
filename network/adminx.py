@@ -67,8 +67,29 @@ class VPNAdmin(object):
 
     def delete_model(self):
         """删除VPN的时候触发"""
-        print('delete a vpn')
+        obj = self.obj
+        ros = obj.ros
+        # ros 设备信息
+        print(f'ros_ip:{ros.ip}')
+        print(f'ros_user:{ros.ros_user}')
+        print(f'ros_pwd:{ros.ros_pwd}')
+        # vpn账号信息
+        print(f'vpn_user:{obj.vpn_user}')
+        print(f'vpn_pwd:{obj.vpn_pwd}')
         super(VPNAdmin, self).delete_model()
+
+    def delete_models(self, queryset):
+        """批量删除VPN的时候触发"""
+        for obj in queryset:
+            ros = obj.ros
+            # ros 设备信息
+            print(f'ros_ip:{ros.ip}')
+            print(f'ros_user:{ros.ros_user}')
+            print(f'ros_pwd:{ros.ros_pwd}')
+            # vpn账号信息
+            print(f'vpn_user:{obj.vpn_user}')
+            print(f'vpn_pwd:{obj.vpn_pwd}')
+        super(VPNAdmin, self).delete_models(queryset)
 
 
 class RosRouterAdmin(object):
