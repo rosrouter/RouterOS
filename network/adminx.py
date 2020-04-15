@@ -1,9 +1,18 @@
-import xadmin
+import xadmin,paramiko,logging
+
 from xadmin import views
 from network.models import RosRouter, UserManage, VPNInfo
-import logging
-import paramiko
 
+def action(rosip,rosuser,rospasswd,command):
+    """ROS设备L2TP用户密码操作函数"""
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(hostname=rosip, port=22,
+                username=rosuser, password=rospasswd,
+                look_for_keys=False)
+    commands = command
+    ssh.exec_command(commands)
+    ssh.close()
 
 class GlobalSetting(object):
     site_title = '网络设备管理系统'
@@ -43,25 +52,29 @@ class VPNAdmin(object):
         if obj.id is None:  # 新增的时候
             self.new_obj.ros = self.request.user.usermanage.device  # 绑定用户管理的ros设备
             ros = self.new_obj.ros
-            print(f'ros_ip:{ros.ip}')
-            print(f'ros_user:{ros.ros_user}')
-            print(f'ros_pwd:{ros.ros_pwd}')
+            command = f'/ppp secret add name={obj.vpn_user} password={obj.vpn_pwd} service=any profile=l2tp-server'
+            action(ros.ip,ros.ros_user,ros.ros_pwd,command)
+            # print(f'ros_ip:{ros.ip}')
+            # print(f'ros_user:{ros.ros_user}')
+            # print(f'ros_pwd:{ros.ros_pwd}')
             # vpn账号信息
-            print(f'vpn_user:{obj.vpn_user}')
-            print(f'vpn_pwd:{obj.vpn_pwd}')
-            print(type(self.new_obj.ros))
+            # print(f'vpn_user:{obj.vpn_user}')
+            # print(f'vpn_pwd:{obj.vpn_pwd}')
+            # print(type(self.new_obj.ros))
             print('create a new vpn')
         else:  # 修改的时候
             # 获取关联ros设备
             ros = self.new_obj.ros
+            command = f'/ppp secret add name={obj.vpn_user} password={obj.vpn_pwd} service=any profile=l2tp-server'
+            action(ros.ip, ros.ros_user, ros.ros_pwd, command)
             # ros 设备信息
-            print(f'ros_ip:{ros.ip}')
-            print(f'ros_user:{ros.ros_user}')
-            print(f'ros_pwd:{ros.ros_pwd}')
-            # vpn账号信息
-            print(f'vpn_user:{obj.vpn_user}')
-            print(f'vpn_pwd:{obj.vpn_pwd}')
-            print(type(self.new_obj.ros))
+            # print(f'ros_ip:{ros.ip}')
+            # print(f'ros_user:{ros.ros_user}')
+            # print(f'ros_pwd:{ros.ros_pwd}')
+            # # vpn账号信息
+            # print(f'vpn_user:{obj.vpn_user}')
+            # print(f'vpn_pwd:{obj.vpn_pwd}')
+            # print(type(self.new_obj.ros))
             print('update a vpn info')
         super(VPNAdmin, self).save_models()
 
@@ -76,6 +89,10 @@ class VPNAdmin(object):
         # vpn账号信息
         print(f'vpn_user:{obj.vpn_user}')
         print(f'vpn_pwd:{obj.vpn_pwd}')
+        ros = self.new_obj.ros
+        command = f'/ppp secret remove {obj.vpn_user}'
+        action(ros.ip, ros.ros_user, ros.ros_pwd, command)
+        print('delete a vpn')
         super(VPNAdmin, self).delete_model()
 
     def delete_models(self, queryset):
