@@ -65,16 +65,8 @@ class VPNAdmin(object):
         else:  # 修改的时候
             # 获取关联ros设备
             ros = self.new_obj.ros
-            command = f'/ppp secret add name={obj.vpn_user} password={obj.vpn_pwd} service=any profile=l2tp-server'
+            command = f'/ppp secret set {obj.vpn_user} password={obj.vpn_pwd}'
             action(ros.ip, ros.ros_user, ros.ros_pwd, command)
-            # ros 设备信息
-            # print(f'ros_ip:{ros.ip}')
-            # print(f'ros_user:{ros.ros_user}')
-            # print(f'ros_pwd:{ros.ros_pwd}')
-            # # vpn账号信息
-            # print(f'vpn_user:{obj.vpn_user}')
-            # print(f'vpn_pwd:{obj.vpn_pwd}')
-            # print(type(self.new_obj.ros))
             print('update a vpn info')
         super(VPNAdmin, self).save_models()
 
@@ -82,14 +74,6 @@ class VPNAdmin(object):
         """删除VPN的时候触发"""
         obj = self.obj
         ros = obj.ros
-        # ros 设备信息
-        print(f'ros_ip:{ros.ip}')
-        print(f'ros_user:{ros.ros_user}')
-        print(f'ros_pwd:{ros.ros_pwd}')
-        # vpn账号信息
-        print(f'vpn_user:{obj.vpn_user}')
-        print(f'vpn_pwd:{obj.vpn_pwd}')
-        ros = self.new_obj.ros
         command = f'/ppp secret remove {obj.vpn_user}'
         action(ros.ip, ros.ros_user, ros.ros_pwd, command)
         print('delete a vpn')
@@ -97,15 +81,11 @@ class VPNAdmin(object):
 
     def delete_models(self, queryset):
         """批量删除VPN的时候触发"""
+        print(queryset)
         for obj in queryset:
             ros = obj.ros
-            # ros 设备信息
-            print(f'ros_ip:{ros.ip}')
-            print(f'ros_user:{ros.ros_user}')
-            print(f'ros_pwd:{ros.ros_pwd}')
-            # vpn账号信息
-            print(f'vpn_user:{obj.vpn_user}')
-            print(f'vpn_pwd:{obj.vpn_pwd}')
+            command = f'/ppp secret remove {obj.vpn_user}'
+            action(ros.ip, ros.ros_user, ros.ros_pwd, command)
         super(VPNAdmin, self).delete_models(queryset)
 
 
