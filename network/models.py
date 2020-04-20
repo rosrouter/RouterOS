@@ -22,6 +22,7 @@ class VPNInfo(models.Model):
     vpn_user = models.CharField(verbose_name='VPN用户名', max_length=60, null=False, default='')
     vpn_pwd = models.CharField(verbose_name='VPN密码', max_length=60, null=False, default='')
     status = models.BooleanField(verbose_name='VPN状态', null=False, default=False)
+    remark = models.CharField(verbose_name='备注信息', max_length=400, null=False, default='')
     up_time = models.CharField(verbose_name='在线时间', max_length=60, null=False, blank=True, default='')
     remark = models.CharField(verbose_name='备注', max_length=60, null=False, blank=True, default='')
 
@@ -40,3 +41,14 @@ class UserManage(models.Model):
         verbose_name_plural = verbose_name
         db_table = "user_manage"
         unique_together = ('user', 'device',)  # 绑定user和device组合的唯一性（其实没必要了）
+
+
+class Button(models.Model):
+    name = models.CharField(verbose_name='按钮名称', blank=False, max_length=60, default='')
+    port = models.CharField(verbose_name='端口号', max_length=60, default='')
+    ip = models.GenericIPAddressField(verbose_name='ip', null=True, blank=True)
+
+    class Meta:
+        verbose_name = "按钮"
+        verbose_name_plural = verbose_name
+        db_table = "button"

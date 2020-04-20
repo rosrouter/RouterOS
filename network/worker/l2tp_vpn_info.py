@@ -1,8 +1,9 @@
 from network.models import RosRouter, VPNInfo
 from network.serializers import VPNInfoSerializer
-import paramiko, re,logging
+import paramiko, re, logging
 
 logger = logging.getLogger(__name__)
+
 
 def scan_vpn():
     roses = RosRouter.objects.all()
@@ -46,5 +47,7 @@ def scan_vpn():
                 vpn_ser.save()
             else:
                 logging.error(f'Device:{ros.ip} with {vpn_ser.errors}')
+
+
 def l2tp():
     scan_vpn()
