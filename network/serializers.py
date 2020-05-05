@@ -1,4 +1,5 @@
 from .models import RosRouter, UserManage, VPNInfo
+from xadmin.models import UserWidget
 from rest_framework import serializers
 
 
@@ -17,4 +18,9 @@ class UserManageSerializer(serializers.ModelSerializer):
 class VPNInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = VPNInfo
+        fields = '__all__'
+
+class UserWidgetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserWidget
         fields = '__all__'

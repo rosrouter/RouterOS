@@ -27,5 +27,6 @@ from xadmin.plugins import xversion
 xversion.register_models()
 
 urlpatterns = [
+    path('network/', include('network.urls')),
     path('xadmin/', xadmin.site.urls),
 ]

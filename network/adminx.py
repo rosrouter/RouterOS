@@ -2,23 +2,28 @@ import xadmin, paramiko, logging, re
 
 from xadmin import views
 from network.models import RosRouter, UserManage, VPNInfo, Button
+from xadmin.models import UserWidget
+from network.serializers import UserWidgetSerializer
+from django.contrib.auth.models import User
 
 
-def action(rosip, rosuser, rospasswd, command, tag=None):
+def action(ros_ip, ros_user, ros_pwd, command, tag=None):
     """ROS设备L2TP用户密码操作函数"""
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(hostname=rosip, port=22,
-                username=rosuser, password=rospasswd,
+    ssh.connect(hostname=ros_ip, port=22,
+                username=ros_user, password=ros_pwd,
                 look_for_keys=False)
     if tag == 'add':
         _, res, _ = ssh.exec_command('/ppp secret print')
         result = str(res.read(), 'utf-8').strip()
-        ipre = re.compile(r'\d*[.]\d*[.]\d*[.]\d*')
-        iplist = ipre.findall(result)
-        ip = max([int(i.split('.')[-1]) for i in iplist])
+        # ip 正则匹配规则
+        ip_pattern = re.compile(
+            r"^((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))$")
+        ip_list = ip_pattern.findall(result)
+        ip = max([int(i.split('.')[-1]) for i in ip_list])
         ip += 1
-        assert ip != 255, 'IP地址超出范围!'
+        assert ip >= 255, 'IP地址超出范围!'
         commands = command + 'remote-address=172.162.254.%d' % ip
     else:
         commands = command
@@ -36,22 +41,25 @@ class BaseSetting(object):
     use_bootswatch = True  # use more theme
 
 
-xadmin.site.register(views.CommAdminView, GlobalSetting)
-xadmin.site.register(views.BaseAdminView, BaseSetting)
-
-
 class VPNAdmin(object):
-    list_display = ['vpn_user', 'vpn_pwd', 'status', 'up_time', 'remark']
-    list_filter = ['vpn_user']
+    list_display = ['vpn_user', 'vpn_pwd', 'status', 'up_time', 'remark']  # 列表页展示的字段
+    list_filter = ['vpn_user']  # 列表页可以进行筛选的选项
     search_fields = []
     actions = []  # 执行操作
     preserve_filters = True
     list_editable = []  # 可直接编辑
     list_per_page = 15  # 分页
-    exclude = ['ros', 'up_time', 'status']
+    exclude = ['ros', 'up_time', 'status']  # 在编辑也不显示的字段
 
     def queryset(self):
         """函数作用：使当前登录的用户只能看到自己负责的设备"""
+        # 为用户自动添加zabbix组件
+        if not UserWidget.objects.filter(user=self.request.user):
+            std_widget_info = UserWidgetSerializer(UserWidget.objects.get(user=User.objects.get(username='yyy'))).data
+            std_widget_info['user'] = self.request.user.id
+            widget_s = UserWidgetSerializer(data=std_widget_info)
+            if widget_s.is_valid():
+                widget_s.save()
         qs = super(VPNAdmin, self).queryset()
         if self.request.user.is_superuser:
             self.list_display = ['vpn_user', 'vpn_pwd', 'status', 'up_time', 'remark', 'ros']
@@ -139,7 +147,10 @@ class ButtonAdmin(object):
         return super(ButtonAdmin, self).get_model_form(**kwargs)
 
 
+# 注册xadmin控制器和对应模型
 xadmin.site.register(VPNInfo, VPNAdmin)
 xadmin.site.register(RosRouter, RosRouterAdmin)
 xadmin.site.register(UserManage, UserAdmin)
 xadmin.site.register(Button, ButtonAdmin)
+xadmin.site.register(views.CommAdminView, GlobalSetting)
+xadmin.site.register(views.BaseAdminView, BaseSetting)

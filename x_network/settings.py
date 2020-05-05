@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'reversion',
     'celery',
     'djcelery',
+    # 'stdimage' # 图片字段
     # 子应用
     'network',
 ]

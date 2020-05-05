@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+# from stdimage.models import StdImageField
 
 
 # Create your models here.
@@ -52,3 +53,13 @@ class Button(models.Model):
         verbose_name = "按钮"
         verbose_name_plural = verbose_name
         db_table = "button"
+
+
+# class ZabbixGraph(models.Model):
+#     ros = models.OneToOneField(RosRouter, on_delete=models.CASCADE)
+#     ether1 = StdImageField(upload_to='path/to/img', blank=True,
+#                            variations={'large': (600, 400), 'thumbnail': (100, 100, True), 'medium': (300, 200), })
+#     ether2 = StdImageField(upload_to='path/to/img', blank=True,
+#                            variations={'large': (600, 400), 'thumbnail': (100, 100, True), 'medium': (300, 200), })
+#     bridge1 = StdImageField(upload_to='path/to/img', blank=True,
+#                             variations={'large': (600, 400), 'thumbnail': (100, 100, True), 'medium': (300, 200), })
