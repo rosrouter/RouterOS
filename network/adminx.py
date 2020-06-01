@@ -128,21 +128,21 @@ class ButtonAdmin(object):
         self.new_obj.ip = ''
         self.new_obj.port = ''
         if obj.id is not None:
-            if obj.name == '启动端口':
+            if obj.name == '路由路径优化':
                 pass
-            elif obj.name == '禁用端口':
+            elif obj.name == '开启设备接口':
                 pass
-            elif obj.name == '优化ip':
+            elif obj.name == '关闭设备接口':
                 pass
         super(ButtonAdmin, self).save_models()
 
     def get_model_form(self, **kwargs):
         obj = Button.objects.get(id=self.args[0])
-        if obj.name == '启动端口':
+        if obj.name == '路由路径优化':
             self.exclude = ['ip', 'name']
-        elif obj.name == '禁用端口':
+        elif obj.name == '开启设备接口':
             self.exclude = ['ip', 'name']
-        elif obj.name == '优化ip':
+        elif obj.name == '关闭设备接口':
             self.exclude = ['port', 'name']
         return super(ButtonAdmin, self).get_model_form(**kwargs)
 
