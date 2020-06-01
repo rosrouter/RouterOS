@@ -50,7 +50,7 @@ class Button(models.Model):
     ip = models.GenericIPAddressField(verbose_name='ip', null=True, blank=True)
 
     class Meta:
-        verbose_name = "按钮"
+        verbose_name = "路由与接口功能"
         verbose_name_plural = verbose_name
         db_table = "button"
 

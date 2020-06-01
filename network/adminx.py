@@ -139,11 +139,11 @@ class ButtonAdmin(object):
     def get_model_form(self, **kwargs):
         obj = Button.objects.get(id=self.args[0])
         if obj.name == '路由路径优化':
-            self.exclude = ['ip', 'name']
+            self.exclude = ['port', 'name']
         elif obj.name == '开启设备接口':
             self.exclude = ['ip', 'name']
         elif obj.name == '关闭设备接口':
-            self.exclude = ['port', 'name']
+            self.exclude = ['ip', 'name']
         return super(ButtonAdmin, self).get_model_form(**kwargs)
 
 
