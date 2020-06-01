@@ -235,3 +235,29 @@ CACHES = {
         },
     },
 }
+
+#ZABBIX API
+zabbix = {
+    'URL':'http://122.51.39.93/zabbix/api_jsonrpc.php',
+}
+zabbix_header = {"Content-Type": "application/json"}
+
+class Zabbixapi(object):
+
+    def __init__(self):
+
+        self.token = self.token()
+
+    def token(self):
+        import json,requests
+        data = {
+        "jsonrpc": "2.0",
+        "method": "user.login",
+        "params": {
+        "user": 'Admin',
+        "password": 'zabbix'},
+        "id": 1}
+        requests_token = requests.post(url=zabbix['URL'],data=json.dumps(data),headers=zabbix_header,
+                                timeout=30)
+        token = json.loads(requests_token.content)["result"]
+        return token
