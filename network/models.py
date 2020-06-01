@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class RosRouter(models.Model):
-    ip = models.GenericIPAddressField(verbose_name='ip地址', null=True, blank=True)
+    ip = models.GenericIPAddressField(verbose_name='ip地址', null=True, blank=True, unique=True)
     ros_user = models.CharField(verbose_name='ros用户', max_length=100, null=False, default='')
     ros_pwd = models.CharField(verbose_name='ros密码', max_length=100, null=False, default='')
 
