@@ -19,11 +19,11 @@ def action(ros_ip, ros_user, ros_pwd, command, tag=None):
         result = str(res.read(), 'utf-8').strip()
         # ip 正则匹配规则
         ip_pattern = re.compile(
-            r"^((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))$")
+            r'(?:25[0-5]\.|2[0-4]\d\.|1\d{2}\.|[1-9]?\d\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)')
         ip_list = ip_pattern.findall(result)
         ip = max([int(i.split('.')[-1]) for i in ip_list])
         ip += 1
-        assert ip >= 255, 'IP地址超出范围!'
+        assert ip <= 255, 'IP地址超出范围!'
         commands = command + 'remote-address=172.162.254.%d' % ip
     else:
         commands = command
@@ -139,11 +139,11 @@ class ButtonAdmin(object):
     def get_model_form(self, **kwargs):
         obj = Button.objects.get(id=self.args[0])
         if obj.name == '路由路径优化':
-            self.exclude = ['ip', 'name']
+            self.exclude = ['port', 'name']
         elif obj.name == '开启设备接口':
             self.exclude = ['ip', 'name']
         elif obj.name == '关闭设备接口':
-            self.exclude = ['port', 'name']
+            self.exclude = ['ip', 'name']
         return super(ButtonAdmin, self).get_model_form(**kwargs)
 
 
