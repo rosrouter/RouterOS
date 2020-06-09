@@ -19,11 +19,11 @@ def action(ros_ip, ros_user, ros_pwd, command, tag=None):
         result = str(res.read(), 'utf-8').strip()
         # ip 正则匹配规则
         ip_pattern = re.compile(
-            r"^((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))$")
+            r'(?:25[0-5]\.|2[0-4]\d\.|1\d{2}\.|[1-9]?\d\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)')
         ip_list = ip_pattern.findall(result)
         ip = max([int(i.split('.')[-1]) for i in ip_list])
         ip += 1
-        assert ip >= 255, 'IP地址超出范围!'
+        assert ip <= 255, 'IP地址超出范围!'
         commands = command + 'remote-address=172.162.254.%d' % ip
     else:
         commands = command

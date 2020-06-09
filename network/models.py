@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-# from stdimage.models import StdImageField
 
 
 # Create your models here.
@@ -53,7 +52,6 @@ class Button(models.Model):
         verbose_name = "路由与接口功能"
         verbose_name_plural = verbose_name
         db_table = "button"
-
 
 # class ZabbixGraph(models.Model):
 #     ros = models.OneToOneField(RosRouter, on_delete=models.CASCADE)
