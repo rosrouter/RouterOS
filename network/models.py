@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from cidrfield.models import IPNetworkField
 
 # Create your models here.
 class RosRouter(models.Model):
@@ -46,7 +46,7 @@ class UserManage(models.Model):
 class Button(models.Model):
     name = models.CharField(verbose_name='按钮名称', blank=False, max_length=60, default='')
     port = models.CharField(verbose_name='端口号', max_length=60, default='')
-    ip = models.GenericIPAddressField(verbose_name='ip', null=True, blank=True)
+    ip = IPNetworkField(verbose_name='ip', null=True, blank=True)
 
     class Meta:
         verbose_name = "路由与接口功能"
