@@ -30,6 +30,15 @@ def action(ros_ip, ros_user, ros_pwd, command, tag=None):
     ssh.exec_command(commands)
     ssh.close()
 
+def route(ros_ip, ros_user, ros_pwd,dstroute):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(hostname=ros_ip, port=22,
+                username=ros_user, password=ros_pwd,
+                look_for_keys=False)
+    command = '/ip route add  dst-address=%s gateway=l2tp-p'%dstroute
+    ssh.exec_command(command)
+    ssh.close()
 
 class GlobalSetting(object):
     site_title = '网络设备管理系统'
@@ -129,7 +138,14 @@ class ButtonAdmin(object):
         self.new_obj.port = ''
         if obj.id is not None:
             if obj.name == '路由路径优化':
-                pass
+                ros_ip = self.request.user.usermanage.device.ip
+                ros_user = self.request.user.usermanage.device.ros_user
+                ros_passwd = self.request.user.usermanage.device.ros_pwd
+                ip_re = re.compile(r'\d*[.]\d*[.]\d*[.]\d*[/]\d*')
+                if not ip_re.search(self.new_obj.ip):
+                    return 'error,route not compile'
+                route(ros_ip, ros_user, ros_passwd,self.new_obj.ip)
+
             elif obj.name == '开启设备接口':
                 pass
             elif obj.name == '关闭设备接口':
