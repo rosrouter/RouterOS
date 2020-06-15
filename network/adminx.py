@@ -141,10 +141,11 @@ class ButtonAdmin(object):
                 ros_ip = self.request.user.usermanage.device.ip
                 ros_user = self.request.user.usermanage.device.ros_user
                 ros_passwd = self.request.user.usermanage.device.ros_pwd
-                ip_re = re.compile(r'\d*[.]\d*[.]\d*[.]\d*[/]\d*')
-                if not ip_re.search(self.new_obj.ip):
+                routeip = self.request.POST['ip']
+                ip_re = re.compile(r'\d+[.]\d+[.]\d+[.]\d+[/]\d+')
+                if not ip_re.search(routeip):
                     return 'error,route not compile'
-                route(ros_ip, ros_user, ros_passwd,self.new_obj.ip)
+                route(ros_ip, ros_user, ros_passwd,routeip)
 
             elif obj.name == '开启设备接口':
                 pass
