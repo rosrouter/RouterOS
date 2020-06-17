@@ -11,7 +11,7 @@ class LoginMiddleware(MiddlewareMixin):
             html_str = f"<img src=\"http://49.235.114.108:{request.META['SERVER_PORT']}/network/image/\" width=\"1200\" height=\"600\" title=\"流量图\">"
             # 检查对应的widget是否和请求端口一致
             widget = UserWidget.objects.filter(user=request.user, page_id='home', widget_type='html')
-            user_settings = UserSettings.objects.get(user=request.user)
+            user_settings = UserSettings.objects.filter(user=request.user)[0]
             print(request.user.id)
             if widget:
                 value = widget[0].get_value()
