@@ -146,10 +146,10 @@ CELERY_IMPORTS = ('network.tasks')
 CELERY_TIMEZONE = 'Asia/Shanghai'
 
 app.conf.task_routes = {
-'tasks.l2tp_vpn_scan': {'queue': 'l2tp_vpn_scan'}
+    'tasks.l2tp_vpn_scan': {'queue': 'l2tp_vpn_scan'}
 }
 CELERYBEAT_SCHEDULE = {
-'l2tp_vpn_scan': {
+    'l2tp_vpn_scan': {
         "task": "network.tasks.l2tp_vpn_scan",
         "schedule": timedelta(hours=1),
         "args": ()
@@ -236,28 +236,34 @@ CACHES = {
     },
 }
 
-#ZABBIX API
+# ZABBIX API
 zabbix = {
-    'URL':'http://122.51.39.93/zabbix/api_jsonrpc.php',
+    'URL': 'http://122.51.39.93/zabbix/api_jsonrpc.php',
 }
 zabbix_header = {"Content-Type": "application/json"}
+TEST = 123
+try:
+    # 会导入debug_setting里全部参数，遇到一样的参数就会覆盖 就像 a =1，a=2 最终a的值是2
+    from x_network.debug_settings import *
+except ModuleNotFoundError:
+    pass
+
 
 class Zabbixapi(object):
 
     def __init__(self):
-
         self.token = self.token()
 
     def token(self):
-        import json,requests
+        import json, requests
         data = {
-        "jsonrpc": "2.0",
-        "method": "user.login",
-        "params": {
-        "user": 'Admin',
-        "password": 'zabbix'},
-        "id": 1}
-        requests_token = requests.post(url=zabbix['URL'],data=json.dumps(data),headers=zabbix_header,
-                                timeout=30)
+            "jsonrpc": "2.0",
+            "method": "user.login",
+            "params": {
+                "user": 'Admin',
+                "password": 'zabbix'},
+            "id": 1}
+        requests_token = requests.post(url=zabbix['URL'], data=json.dumps(data), headers=zabbix_header,
+                                       timeout=30)
         token = json.loads(requests_token.content)["result"]
         return token

@@ -2,6 +2,16 @@ from django.db import models
 from django.contrib.auth.models import User
 from cidrfield.models import IPNetworkField
 
+IP_EXPORT_CHOICES = (
+    ('l2tp-xg', '香港出口'),
+    ('l2tp-hd', '海底光缆出口'),
+    ('l2tp-dx', '电信精品出口'),
+    ('l2tp-al', '阿里云出口'),
+    ('l2tp-tx', '腾讯云出口'),
+
+)
+
+
 # Create your models here.
 class RosRouter(models.Model):
     ip = models.GenericIPAddressField(verbose_name='ip地址', null=True, blank=True, unique=True)
@@ -46,18 +56,10 @@ class UserManage(models.Model):
 class Button(models.Model):
     name = models.CharField(verbose_name='按钮名称', blank=False, max_length=60, default='')
     port = models.CharField(verbose_name='端口号', max_length=60, default='')
-    ip = IPNetworkField(verbose_name='ip', null=True, blank=True)
+    ip = IPNetworkField(verbose_name='路由地址', null=True, blank=False)
+    ip_export = models.CharField(verbose_name='ip出口', choices=IP_EXPORT_CHOICES, max_length=10, default='', blank=False)
 
     class Meta:
         verbose_name = "路由与接口功能"
         verbose_name_plural = verbose_name
         db_table = "button"
-
-# class ZabbixGraph(models.Model):
-#     ros = models.OneToOneField(RosRouter, on_delete=models.CASCADE)
-#     ether1 = StdImageField(upload_to='path/to/img', blank=True,
-#                            variations={'large': (600, 400), 'thumbnail': (100, 100, True), 'medium': (300, 200), })
-#     ether2 = StdImageField(upload_to='path/to/img', blank=True,
-#                            variations={'large': (600, 400), 'thumbnail': (100, 100, True), 'medium': (300, 200), })
-#     bridge1 = StdImageField(upload_to='path/to/img', blank=True,
-#                             variations={'large': (600, 400), 'thumbnail': (100, 100, True), 'medium': (300, 200), })

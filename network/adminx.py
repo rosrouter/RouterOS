@@ -136,6 +136,7 @@ class ButtonAdmin(object):
         obj = self.new_obj
         self.new_obj.ip = ''
         self.new_obj.port = ''
+        self.new_obj.ip_export = ''
         if obj.id is not None:
             if obj.name == '路由路径优化':
                 ros_ip = self.request.user.usermanage.device.ip
@@ -158,9 +159,9 @@ class ButtonAdmin(object):
         if obj.name == '路由路径优化':
             self.exclude = ['port', 'name']
         elif obj.name == '开启设备接口':
-            self.exclude = ['ip', 'name']
+            self.exclude = ['ip', 'name', 'ip_export']
         elif obj.name == '关闭设备接口':
-            self.exclude = ['ip', 'name']
+            self.exclude = ['ip', 'name', 'ip_export']
         return super(ButtonAdmin, self).get_model_form(**kwargs)
 
 
