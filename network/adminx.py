@@ -5,6 +5,7 @@ from network.models import RosRouter, UserManage, VPNInfo, Button
 from xadmin.models import UserWidget
 from network.serializers import UserWidgetSerializer
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 
 
 def action(ros_ip, ros_user, ros_pwd, command, tag=None):
@@ -30,15 +31,17 @@ def action(ros_ip, ros_user, ros_pwd, command, tag=None):
     ssh.exec_command(commands)
     ssh.close()
 
-def route(ros_ip, ros_user, ros_pwd,dstroute):
+
+def route(ros_ip, ros_user, ros_pwd, dstroute):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(hostname=ros_ip, port=22,
                 username=ros_user, password=ros_pwd,
                 look_for_keys=False)
-    command = '/ip route add  dst-address=%s gateway=l2tp-p'%dstroute
+    command = '/ip route add  dst-address=%s gateway=l2tp-p' % dstroute
     ssh.exec_command(command)
     ssh.close()
+
 
 class GlobalSetting(object):
     site_title = '网络设备管理系统'
@@ -146,7 +149,7 @@ class ButtonAdmin(object):
                 ip_re = re.compile(r'\d+[.]\d+[.]\d+[.]\d+[/]\d+')
                 if not ip_re.search(routeip):
                     return 'error,route not compile'
-                route(ros_ip, ros_user, ros_passwd,routeip)
+                route(ros_ip, ros_user, ros_passwd, routeip)
 
             elif obj.name == '开启设备接口':
                 pass
@@ -163,6 +166,37 @@ class ButtonAdmin(object):
         elif obj.name == '关闭设备接口':
             self.exclude = ['ip', 'name', 'ip_export']
         return super(ButtonAdmin, self).get_model_form(**kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        保存表单数据。具体的程序执行流程为:
+
+            1. :meth:`prepare_form`
+
+            2. :meth:`instance_forms`
+
+                2.1 :meth:`get_form_datas`
+
+            3. :meth:`setup_forms`
+
+            4. :meth:`valid_forms`
+
+                4.1 :meth:`save_forms`
+
+                4.2 :meth:`save_models`
+
+                4.3 :meth:`save_related`
+
+                4.4 :meth:`post_response`
+        """
+        self.instance_forms()
+        self.setup_forms()
+
+        if self.valid_forms():
+            self.save_forms()
+            self.save_models()
+            self.save_related()
+            return HttpResponseRedirect('/xadmin/network/button/')
 
 
 # 注册xadmin控制器和对应模型
