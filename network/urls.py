@@ -7,4 +7,5 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path(r'', include(router.urls)),
     path(r'image/', views.image_test),
+    path(r'api/test/', views.apiechart),
 ]

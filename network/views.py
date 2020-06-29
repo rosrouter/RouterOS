@@ -2,9 +2,10 @@ from django.contrib.auth.models import User
 from network.serializers import UserSerializer, RosRouterSerializer
 from django.http import HttpResponse
 import base64
-import os
+import os,json
 from network.worker.get_zabbix_graph import get_image_by_host
 from network.models import UserManage
+
 
 
 # Create your views here.
@@ -49,3 +50,9 @@ def add_user_ros_by_batch(request):
             print(f'{ip}对应的user创建失败')
             continue
         UserManage.objects.create(user=user, device=ros)
+
+def apiechart(request):
+    data =  json.dumps({
+        "Cisco": 29, "Juniper": 60, "Paloalto": 30, "Checkpoint": 20, "Fortinet": 50, "Radware": 100
+    })
+    return HttpResponse(data)

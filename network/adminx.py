@@ -1,4 +1,4 @@
-import xadmin, paramiko, logging, re
+import xadmin, paramiko, logging, re,json
 
 from xadmin import views
 from network.models import RosRouter, UserManage, VPNInfo, Button
@@ -32,20 +32,30 @@ def action(ros_ip, ros_user, ros_pwd, command, tag=None):
     ssh.close()
 
 
-def route(ros_ip, ros_user, ros_pwd, dstroute):
+def route(ros_ip, ros_user, ros_pwd, dstroute,nexthop,self):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(hostname=ros_ip, port=22,
                 username=ros_user, password=ros_pwd,
                 look_for_keys=False)
-    command = '/ip route add  dst-address=%s gateway=l2tp-p' % dstroute
-    ssh.exec_command(command)
+
+    command = '/ip route add  dst-address=%s gateway=%s'%(dstroute,nexthop)
+    stdin, stdout, stderr = ssh.exec_command(command)
+    res = str(stdout.read(),'utf-8')
+    if 'invalid value for argument gw' in res:
+        self.message_user(u'下一跳接口未被创建，配置下发失败!','error')
+        ssh.close()
+        return
+    self.message_user(u'路由下发成功!', 'success')
     ssh.close()
 
 
 class GlobalSetting(object):
     site_title = '网络设备管理系统'
     site_footer = 'Design by yyy'
+
+
+
 
 
 class BaseSetting(object):
@@ -146,10 +156,11 @@ class ButtonAdmin(object):
                 ros_user = self.request.user.usermanage.device.ros_user
                 ros_passwd = self.request.user.usermanage.device.ros_pwd
                 routeip = self.request.POST['ip']
+                nexthop = self.request.POST['ip_export']
                 ip_re = re.compile(r'\d+[.]\d+[.]\d+[.]\d+[/]\d+')
                 if not ip_re.search(routeip):
                     return 'error,route not compile'
-                route(ros_ip, ros_user, ros_passwd, routeip)
+                route(ros_ip, ros_user, ros_passwd, routeip,nexthop,self)
 
             elif obj.name == '开启设备接口':
                 pass

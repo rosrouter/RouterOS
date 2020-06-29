@@ -45,11 +45,13 @@ INSTALLED_APPS = [
     # 'stdimage' # 图片字段
     # 子应用
     'network',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -57,6 +59,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'x_network.my_middleware.LoginMiddleware'
 ]
+
+if DEBUG:
+    CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'x_network.urls'
 
