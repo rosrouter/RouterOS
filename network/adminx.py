@@ -1,4 +1,4 @@
-import xadmin, paramiko, logging, re,json
+import xadmin, paramiko, logging, re,json,socket
 
 from xadmin import views
 from network.models import RosRouter, UserManage, VPNInfo, Button
@@ -155,12 +155,18 @@ class ButtonAdmin(object):
                 ros_ip = self.request.user.usermanage.device.ip
                 ros_user = self.request.user.usermanage.device.ros_user
                 ros_passwd = self.request.user.usermanage.device.ros_pwd
-                routeip = self.request.POST['ip']
                 nexthop = self.request.POST['ip_export']
-                ip_re = re.compile(r'\d+[.]\d+[.]\d+[.]\d+[/]\d+')
-                if not ip_re.search(routeip):
-                    return 'error,route not compile'
-                route(ros_ip, ros_user, ros_passwd, routeip,nexthop,self)
+                routeip = self.request.POST['ip']
+                reip = re.compile(r'\d*[.]\d*[.]\d*[.]\d*[/][\d+]')
+                if reip.search(routeip):
+                    route(ros_ip, ros_user, ros_passwd, routeip, nexthop, self)
+                else:
+                    try:
+                        res = socket.getaddrinfo(routeip, 'http')[0][4][0] + '/32'
+                    except:
+                        self.message_user(u'域名解析失败或输入IP地址格式错误', 'error')
+                        return
+                    route(ros_ip, ros_user, ros_passwd, res,nexthop,self)
 
             elif obj.name == '开启设备接口':
                 pass

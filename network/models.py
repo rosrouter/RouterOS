@@ -56,7 +56,7 @@ class UserManage(models.Model):
 class Button(models.Model):
     name = models.CharField(verbose_name='按钮名称', blank=False, max_length=60, default='')
     port = models.CharField(verbose_name='端口号', max_length=60, default='')
-    ip = IPNetworkField(verbose_name='路由地址', null=True, blank=False)
+    ip = models.CharField(verbose_name='路由地址', null=True, max_length=100,blank=False)
     ip_export = models.CharField(verbose_name='ip出口', choices=IP_EXPORT_CHOICES, max_length=10, default='', blank=False)
 
     class Meta:
