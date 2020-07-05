@@ -50,12 +50,43 @@ def route(ros_ip, ros_user, ros_pwd, dstroute,nexthop,self):
     ssh.close()
 
 
+def delete(ros_ip, ros_user, ros_pwd, command,vpn_user):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(hostname=ros_ip, port=22,
+                username=ros_user, password=ros_pwd,
+                look_for_keys=False)
+    stdin, stdout, stderr = ssh.exec_command(command)
+    res = str(stdout.read(), 'utf-8')
+    for i in res.split('\n')[2:]:
+        item = re.split(r' +',i.strip())
+        if vpn_user == item[1]:
+            num = item[0]
+            ssh.exec_command('/ppp secret remove %s'%num)
+            ssh.close()
+            break
+    ssh.close()
+
+def deletes(ros_ip, ros_user, ros_pwd, command,vpn_user):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(hostname=ros_ip, port=22,
+                username=ros_user, password=ros_pwd,
+                look_for_keys=False)
+    stdin, stdout, stderr = ssh.exec_command(command)
+    res = str(stdout.read(), 'utf-8')
+    for i in res.split('\n')[2:]:
+        item = re.split(r' +',i.strip())
+        if vpn_user == item[1]:
+            num = item[0]
+            ssh.exec_command('/ppp secret remove %s'%num)
+            ssh.close()
+            break
+    ssh.close()
+
 class GlobalSetting(object):
     site_title = '网络设备管理系统'
     site_footer = 'Design by yyy'
-
-
-
 
 
 class BaseSetting(object):
@@ -118,9 +149,8 @@ class VPNAdmin(object):
         """删除VPN的时候触发"""
         obj = self.obj
         ros = obj.ros
-        command = f'/ppp secret remove {obj.vpn_user}'
-        action(ros.ip, ros.ros_user, ros.ros_pwd, command)
-        print('delete a vpn')
+        command = '/ppp secret print'
+        delete(ros.ip, ros.ros_user, ros.ros_pwd, command,obj.vpn_user)
         super(VPNAdmin, self).delete_model()
 
     def delete_models(self, queryset):
@@ -128,8 +158,8 @@ class VPNAdmin(object):
         print(queryset)
         for obj in queryset:
             ros = obj.ros
-            command = f'/ppp secret remove {obj.vpn_user}'
-            action(ros.ip, ros.ros_user, ros.ros_pwd, command)
+            command = f'/ppp secret print'
+            deletes(ros.ip, ros.ros_user, ros.ros_pwd, command,obj.vpn_user)
         super(VPNAdmin, self).delete_models(queryset)
 
 
@@ -158,6 +188,7 @@ class ButtonAdmin(object):
                 nexthop = self.request.POST['ip_export']
                 routeip = self.request.POST['ip']
                 reip = re.compile(r'\d*[.]\d*[.]\d*[.]\d*[/][\d+]')
+                print(ros_passwd)
                 if reip.search(routeip):
                     route(ros_ip, ros_user, ros_passwd, routeip, nexthop, self)
                 else:
