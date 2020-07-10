@@ -85,7 +85,7 @@ def deletes(ros_ip, ros_user, ros_pwd, command,vpn_user):
     ssh.close()
 
 class GlobalSetting(object):
-    site_title = '网络设备管理系统'
+    site_title = '互联网接入管理系统'
     site_footer = 'Design by yyy'
 
 

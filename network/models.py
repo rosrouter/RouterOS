@@ -37,7 +37,7 @@ class VPNInfo(models.Model):
     remark = models.CharField(verbose_name='备注', max_length=60, null=False, blank=True, default='')
 
     class Meta:
-        verbose_name = "VPN信息"
+        verbose_name = "远程办公服务"
         verbose_name_plural = verbose_name
         db_table = "vpn_info"
 
@@ -60,6 +60,6 @@ class Button(models.Model):
     ip_export = models.CharField(verbose_name='ip出口', choices=IP_EXPORT_CHOICES, max_length=10, default='', blank=False)
 
     class Meta:
-        verbose_name = "路由与接口功能"
+        verbose_name = "路由出口优化"
         verbose_name_plural = verbose_name
         db_table = "button"
