@@ -1,4 +1,4 @@
-import xadmin, paramiko, logging, re,json,socket
+import xadmin, paramiko, logging, re, json, socket
 
 from xadmin import views
 from network.models import RosRouter, UserManage, VPNInfo, Button
@@ -32,25 +32,25 @@ def action(ros_ip, ros_user, ros_pwd, command, tag=None):
     ssh.close()
 
 
-def route(ros_ip, ros_user, ros_pwd, dstroute,nexthop,self):
+def route(ros_ip, ros_user, ros_pwd, dstroute, nexthop, self):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(hostname=ros_ip, port=22,
                 username=ros_user, password=ros_pwd,
                 look_for_keys=False)
 
-    command = '/ip route add  dst-address=%s gateway=%s'%(dstroute,nexthop)
+    command = '/ip route add  dst-address=%s gateway=%s' % (dstroute, nexthop)
     stdin, stdout, stderr = ssh.exec_command(command)
-    res = str(stdout.read(),'utf-8')
+    res = str(stdout.read(), 'utf-8')
     if 'invalid value for argument gw' in res:
-        self.message_user(u'下一跳接口未被创建，配置下发失败!','error')
+        self.message_user(u'下一跳接口未被创建，配置下发失败!', 'error')
         ssh.close()
         return
     self.message_user(u'路由下发成功!', 'success')
     ssh.close()
 
 
-def delete(ros_ip, ros_user, ros_pwd, command,vpn_user):
+def delete(ros_ip, ros_user, ros_pwd, command, vpn_user):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(hostname=ros_ip, port=22,
@@ -59,15 +59,16 @@ def delete(ros_ip, ros_user, ros_pwd, command,vpn_user):
     stdin, stdout, stderr = ssh.exec_command(command)
     res = str(stdout.read(), 'utf-8')
     for i in res.split('\n')[2:]:
-        item = re.split(r' +',i.strip())
+        item = re.split(r' +', i.strip())
         if vpn_user == item[1]:
             num = item[0]
-            ssh.exec_command('/ppp secret remove %s'%num)
+            ssh.exec_command('/ppp secret remove %s' % num)
             ssh.close()
             break
     ssh.close()
 
-def deletes(ros_ip, ros_user, ros_pwd, command,vpn_user):
+
+def deletes(ros_ip, ros_user, ros_pwd, command, vpn_user):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(hostname=ros_ip, port=22,
@@ -76,13 +77,14 @@ def deletes(ros_ip, ros_user, ros_pwd, command,vpn_user):
     stdin, stdout, stderr = ssh.exec_command(command)
     res = str(stdout.read(), 'utf-8')
     for i in res.split('\n')[2:]:
-        item = re.split(r' +',i.strip())
+        item = re.split(r' +', i.strip())
         if vpn_user == item[1]:
             num = item[0]
-            ssh.exec_command('/ppp secret remove %s'%num)
+            ssh.exec_command('/ppp secret remove %s' % num)
             ssh.close()
             break
     ssh.close()
+
 
 class GlobalSetting(object):
     site_title = '互联网接入管理系统'
@@ -150,7 +152,7 @@ class VPNAdmin(object):
         obj = self.obj
         ros = obj.ros
         command = '/ppp secret print'
-        delete(ros.ip, ros.ros_user, ros.ros_pwd, command,obj.vpn_user)
+        delete(ros.ip, ros.ros_user, ros.ros_pwd, command, obj.vpn_user)
         super(VPNAdmin, self).delete_model()
 
     def delete_models(self, queryset):
@@ -159,7 +161,7 @@ class VPNAdmin(object):
         for obj in queryset:
             ros = obj.ros
             command = f'/ppp secret print'
-            deletes(ros.ip, ros.ros_user, ros.ros_pwd, command,obj.vpn_user)
+            deletes(ros.ip, ros.ros_user, ros.ros_pwd, command, obj.vpn_user)
         super(VPNAdmin, self).delete_models(queryset)
 
 
@@ -172,79 +174,74 @@ class UserAdmin(object):
 
 
 class ButtonAdmin(object):
-    list_display = ['name']
-    exclude = ['ip', 'port']
+    list_display = ['ip', 'ip_export']
+    exclude = ['device']
 
     def save_models(self):
         obj = self.new_obj
-        self.new_obj.ip = ''
-        self.new_obj.port = ''
-        self.new_obj.ip_export = ''
+        self.new_obj.device = self.request.user.usermanage.device
         if obj.id is not None:
-            if obj.name == '路由路径优化':
-                ros_ip = self.request.user.usermanage.device.ip
-                ros_user = self.request.user.usermanage.device.ros_user
-                ros_passwd = self.request.user.usermanage.device.ros_pwd
-                nexthop = self.request.POST['ip_export']
-                routeip = self.request.POST['ip']
-                reip = re.compile(r'\d*[.]\d*[.]\d*[.]\d*[/][\d+]')
-                print(ros_passwd)
-                if reip.search(routeip):
-                    route(ros_ip, ros_user, ros_passwd, routeip, nexthop, self)
-                else:
-                    try:
-                        res = socket.getaddrinfo(routeip, 'http')[0][4][0] + '/32'
-                    except:
-                        self.message_user(u'域名解析失败或输入IP地址格式错误', 'error')
-                        return
-                    route(ros_ip, ros_user, ros_passwd, res,nexthop,self)
-
-            elif obj.name == '开启设备接口':
-                pass
-            elif obj.name == '关闭设备接口':
-                pass
+            ros_ip = self.request.user.usermanage.device.ip
+            ros_user = self.request.user.usermanage.device.ros_user
+            ros_passwd = self.request.user.usermanage.device.ros_pwd
+            nexthop = self.request.POST['ip_export']
+            routeip = self.request.POST['ip']
+            reip = re.compile(r'\d*[.]\d*[.]\d*[.]\d*[/][\d+]')
+            print(ros_passwd)
+            if reip.search(routeip):
+                route(ros_ip, ros_user, ros_passwd, routeip, nexthop, self)
+            else:
+                try:
+                    res = socket.getaddrinfo(routeip, 'http')[0][4][0] + '/32'
+                except:
+                    self.message_user(u'域名解析失败或输入IP地址格式错误', 'error')
+                    return
+                route(ros_ip, ros_user, ros_passwd, res, nexthop, self)
         super(ButtonAdmin, self).save_models()
 
-    def get_model_form(self, **kwargs):
-        obj = Button.objects.get(id=self.args[0])
-        if obj.name == '路由路径优化':
-            self.exclude = ['port', 'name']
-        elif obj.name == '开启设备接口':
-            self.exclude = ['ip', 'name', 'ip_export']
-        elif obj.name == '关闭设备接口':
-            self.exclude = ['ip', 'name', 'ip_export']
-        return super(ButtonAdmin, self).get_model_form(**kwargs)
+    def queryset(self):
+        return Button.objects.filter(device=self.request.user.usermanage.device)
+    # def get_model_form(self, **kwargs):
+    #     obj = Button.objects.get(id=self.args[0])
+    #     if obj.name == '路由路径优化':
+    #         self.exclude = ['port', 'name']
+    #     elif obj.name == '开启设备接口':
+    #         self.exclude = ['ip', 'name', 'ip_export']
+    #     elif obj.name == '关闭设备接口':
+    #         self.exclude = ['ip', 'name', 'ip_export']
+    #     return super(ButtonAdmin, self).get_model_form(**kwargs)
 
-    def post(self, request, *args, **kwargs):
-        """
-        保存表单数据。具体的程序执行流程为:
-
-            1. :meth:`prepare_form`
-
-            2. :meth:`instance_forms`
-
-                2.1 :meth:`get_form_datas`
-
-            3. :meth:`setup_forms`
-
-            4. :meth:`valid_forms`
-
-                4.1 :meth:`save_forms`
-
-                4.2 :meth:`save_models`
-
-                4.3 :meth:`save_related`
-
-                4.4 :meth:`post_response`
-        """
-        self.instance_forms()
-        self.setup_forms()
-
-        if self.valid_forms():
-            self.save_forms()
-            self.save_models()
-            self.save_related()
-            return HttpResponseRedirect('/xadmin/network/button/')
+    # def post(self, request, *args, **kwargs):
+    #     """
+    #     保存表单数据。具体的程序执行流程为:
+    #
+    #         1. :meth:`prepare_form`
+    #
+    #         2. :meth:`instance_forms`
+    #
+    #             2.1 :meth:`get_form_datas`
+    #
+    #         3. :meth:`setup_forms`
+    #
+    #         4. :meth:`valid_forms`
+    #
+    #             4.1 :meth:`save_forms`
+    #
+    #             4.2 :meth:`save_models`
+    #
+    #             4.3 :meth:`save_related`
+    #
+    #             4.4 :meth:`post_response`
+    #     """
+    #     if hasattr(self,'instance_forms'):
+    #         self.instance_forms()
+    #         self.setup_forms()
+    #
+    #     if self.valid_forms():
+    #         self.save_forms()
+    #         self.save_models()
+    #         self.save_related()
+    #         return HttpResponseRedirect('/xadmin/network/button/')
 
 
 # 注册xadmin控制器和对应模型

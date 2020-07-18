@@ -8,4 +8,5 @@ urlpatterns = [
     path(r'', include(router.urls)),
     path(r'image/', views.image_test),
     path(r'api/test/', views.apiechart),
+    path(r'vpn-client/', views.download_vpn_client),
 ]

@@ -54,9 +54,10 @@ class UserManage(models.Model):
 
 
 class Button(models.Model):
-    name = models.CharField(verbose_name='按钮名称', blank=False, max_length=60, default='')
-    port = models.CharField(verbose_name='端口号', max_length=60, default='')
-    ip = models.CharField(verbose_name='路由地址', null=True, max_length=100,blank=False)
+    # name = models.CharField(verbose_name='按钮名称', blank=False, max_length=60, default='')
+    # port = models.CharField(verbose_name='端口号', max_length=60, default='')
+    device = models.ForeignKey(RosRouter, verbose_name='归属ros路由器', blank=True, on_delete=False, null=True)
+    ip = models.CharField(verbose_name='路由地址', null=True, max_length=100, blank=False)
     ip_export = models.CharField(verbose_name='ip出口', choices=IP_EXPORT_CHOICES, max_length=10, default='', blank=False)
 
     class Meta:

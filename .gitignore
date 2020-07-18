@@ -100,3 +100,4 @@ static/scripts
 debug_settings.py
 nohup.out
 
+.DS_Store
