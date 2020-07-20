@@ -45,7 +45,7 @@ def route(ros_ip, ros_user, ros_pwd, dstroute, nexthop, self):
     if 'invalid value for argument gw' in res:
         self.message_user(u'下一跳接口未被创建，配置下发失败!', 'error')
         ssh.close()
-        return
+        return 'fail'
     self.message_user(u'路由下发成功!', 'success')
     ssh.close()
 
@@ -180,7 +180,7 @@ class ButtonAdmin(object):
     def save_models(self):
         obj = self.new_obj
         self.new_obj.device = self.request.user.usermanage.device
-        if obj.id is not None:
+        if obj.id is None:
             ros_ip = self.request.user.usermanage.device.ip
             ros_user = self.request.user.usermanage.device.ros_user
             ros_passwd = self.request.user.usermanage.device.ros_pwd
@@ -189,14 +189,16 @@ class ButtonAdmin(object):
             reip = re.compile(r'\d*[.]\d*[.]\d*[.]\d*[/][\d+]')
             print(ros_passwd)
             if reip.search(routeip):
-                route(ros_ip, ros_user, ros_passwd, routeip, nexthop, self)
+                msg = route(ros_ip, ros_user, ros_passwd, routeip, nexthop, self)
             else:
                 try:
                     res = socket.getaddrinfo(routeip, 'http')[0][4][0] + '/32'
                 except:
                     self.message_user(u'域名解析失败或输入IP地址格式错误', 'error')
                     return
-                route(ros_ip, ros_user, ros_passwd, res, nexthop, self)
+                msg = route(ros_ip, ros_user, ros_passwd, res, nexthop, self)
+            if msg == 'fail':
+                return
         super(ButtonAdmin, self).save_models()
 
     def queryset(self):
