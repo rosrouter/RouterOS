@@ -5,6 +5,7 @@ from network.models import RosRouter, UserManage, VPNInfo, Button
 from xadmin.models import UserWidget
 from network.serializers import UserWidgetSerializer
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 
 
@@ -88,7 +89,7 @@ def deletes(ros_ip, ros_user, ros_pwd, command, vpn_user):
 
 class GlobalSetting(object):
     site_title = '互联网接入管理系统'
-    site_footer = 'Design by yyy'
+    site_footer = 'Design by LIANCHI'
 
 
 class BaseSetting(object):
@@ -180,12 +181,14 @@ class ButtonAdmin(object):
     def save_models(self):
         obj = self.new_obj
         self.new_obj.device = self.request.user.usermanage.device
-        if obj.id is None:
+        nexthop = self.request.POST['ip_export']
+        routeip = self.request.POST['ip']
+        exist_flag = Button.objects.filter(device=self.request.user.usermanage.device, ip=routeip)
+        # 判断库内是否已经存在该组信息
+        if obj.id is None and not exist_flag:
             ros_ip = self.request.user.usermanage.device.ip
             ros_user = self.request.user.usermanage.device.ros_user
             ros_passwd = self.request.user.usermanage.device.ros_pwd
-            nexthop = self.request.POST['ip_export']
-            routeip = self.request.POST['ip']
             reip = re.compile(r'\d*[.]\d*[.]\d*[.]\d*[/][\d+]')
             print(ros_passwd)
             if reip.search(routeip):
@@ -199,7 +202,10 @@ class ButtonAdmin(object):
                 msg = route(ros_ip, ros_user, ros_passwd, res, nexthop, self)
             if msg == 'fail':
                 return
-        super(ButtonAdmin, self).save_models()
+        try:
+            super(ButtonAdmin, self).save_models()
+        except IntegrityError:
+            self.message_user('当前添加的ip已经在库内存在', 'error')
 
     def queryset(self):
         return Button.objects.filter(device=self.request.user.usermanage.device)
