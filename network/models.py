@@ -65,5 +65,3 @@ class Button(models.Model):
         verbose_name_plural = verbose_name
         db_table = "button"
         unique_together = ('ip', 'device',)
-
-Button.objects.all().values_list()
