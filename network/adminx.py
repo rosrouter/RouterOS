@@ -1,7 +1,7 @@
 import xadmin, paramiko, logging, re, json, socket
 
 from xadmin import views
-from network.models import RosRouter, UserManage, VPNInfo, Button
+from network.models import RosRouter, UserManage, VPNInfo, Button , TestModel
 from xadmin.models import UserWidget
 from network.serializers import UserWidgetSerializer
 from django.contrib.auth.models import User
@@ -250,12 +250,14 @@ class ButtonAdmin(object):
     #         self.save_models()
     #         self.save_related()
     #         return HttpResponseRedirect('/xadmin/network/button/')
-
+class TestModelAdmin(object):
+    pass
 
 # 注册xadmin控制器和对应模型
 xadmin.site.register(VPNInfo, VPNAdmin)
 xadmin.site.register(RosRouter, RosRouterAdmin)
 xadmin.site.register(UserManage, UserAdmin)
 xadmin.site.register(Button, ButtonAdmin)
+xadmin.site.register(TestModel, TestModelAdmin)
 xadmin.site.register(views.CommAdminView, GlobalSetting)
 xadmin.site.register(views.BaseAdminView, BaseSetting)

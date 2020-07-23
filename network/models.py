@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import DateTimeField
 from cidrfield.models import IPNetworkField
 
 IP_EXPORT_CHOICES = (
@@ -65,3 +66,7 @@ class Button(models.Model):
         verbose_name_plural = verbose_name
         db_table = "button"
         unique_together = ('ip', 'device',)
+
+
+class TestModel(models.Model):
+    test_time = DateTimeField(verbose_name='时间测试', editable=True)
