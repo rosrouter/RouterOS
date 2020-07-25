@@ -1,12 +1,13 @@
 import xadmin, paramiko, logging, re, json, socket
 
 from xadmin import views
-from network.models import RosRouter, UserManage, VPNInfo, Button , TestModel
+from network.models import RosRouter, UserManage, VPNInfo, Button, ToolDownload
 from xadmin.models import UserWidget
 from network.serializers import UserWidgetSerializer
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
+from network.views import download_vpn_client
 
 
 def action(ros_ip, ros_user, ros_pwd, command, tag=None):
@@ -250,14 +251,21 @@ class ButtonAdmin(object):
     #         self.save_models()
     #         self.save_related()
     #         return HttpResponseRedirect('/xadmin/network/button/')
-class TestModelAdmin(object):
-    pass
+
+
+class ToolDownloadAdmin(object):
+    def get_response(self, *args, **kwargs):
+        if 'update' in self.request.path:
+            return download_vpn_client(request='123')
+        else:
+            super().get_response(*args, **kwargs)
+
 
 # 注册xadmin控制器和对应模型
 xadmin.site.register(VPNInfo, VPNAdmin)
 xadmin.site.register(RosRouter, RosRouterAdmin)
 xadmin.site.register(UserManage, UserAdmin)
 xadmin.site.register(Button, ButtonAdmin)
-xadmin.site.register(TestModel, TestModelAdmin)
+xadmin.site.register(ToolDownload, ToolDownloadAdmin)
 xadmin.site.register(views.CommAdminView, GlobalSetting)
 xadmin.site.register(views.BaseAdminView, BaseSetting)

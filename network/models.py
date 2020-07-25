@@ -68,5 +68,13 @@ class Button(models.Model):
         unique_together = ('ip', 'device',)
 
 
-class TestModel(models.Model):
-    test_time = DateTimeField(verbose_name='时间测试', editable=True)
+class ToolDownload(models.Model):
+    software = models.CharField(verbose_name='软件名', max_length=400, null=False, default='')
+
+    class Meta:
+        verbose_name = "辅助工具下载"
+        verbose_name_plural = verbose_name
+        db_table = "software_download"
+
+    def __str__(self):
+        return self.software
