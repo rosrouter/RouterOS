@@ -78,3 +78,13 @@ class ToolDownload(models.Model):
 
     def __str__(self):
         return self.software
+
+
+class Center(models.Model):
+    vpn_ip = models.GenericIPAddressField(verbose_name='VPN设备ip')
+    uptime = models.CharField(verbose_name='在线时间', max_length=100, blank=False)
+
+    class Meta:
+        verbose_name = '总头控制'
+        verbose_name_plural = verbose_name
+        db_table = 'center'
