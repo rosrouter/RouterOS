@@ -44,7 +44,7 @@ def route(ros_ip, ros_user, ros_pwd, dstroute, nexthop, self):
     command = '/ip route add  dst-address=%s gateway=%s' % (dstroute, nexthop)
     stdin, stdout, stderr = ssh.exec_command(command)
     res = str(stdout.read(), 'utf-8')
-    if 'invalid value for argument gw' in res:
+    if 'invalid value' in res or not res:
         self.message_user(u'下一跳接口未被创建，配置下发失败!', 'error')
         ssh.close()
         return 'fail'

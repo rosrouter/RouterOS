@@ -1,4 +1,4 @@
-from .models import RosRouter, UserManage, VPNInfo
+from .models import RosRouter, UserManage, VPNInfo,Center
 from xadmin.models import UserWidget
 from rest_framework import serializers
 from django.contrib.auth.models import User
@@ -31,4 +31,9 @@ class UserWidgetSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+        fields = '__all__'
+
+class CenterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Center
         fields = '__all__'

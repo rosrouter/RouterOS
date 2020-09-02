@@ -1,14 +1,8 @@
-from django.test import TestCase
-import os, django
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "x_network.settings")
-django.setup()
-# Create your tests here.
-
 import paramiko,re
 import requests,json
 from x_network.settings import Zabbixapi,zabbix,zabbix_header
-
+from network.serializers import CenterSerializer
+from network.models import Center
 def action():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -25,9 +19,8 @@ def action():
         res.append((name, i[2], i[-1]))
     resp = [dict(zip(('name', 'address', 'uptime'), i)) for i in res]
     return resp
-resp = action()
-
 token = Zabbixapi().token
+resp = action()
 
 def actions():
     for i in resp:
@@ -75,5 +68,16 @@ def actions():
             except:
                 i['incoming'] = None
                 i['outgoing'] = None
-        print(i)
-actions()
+        # print(i)
+        try:
+            username = Center.objects.get(username=i['name'])
+            serializer = CenterSerializer(username, data=i)
+        except:
+            serializer = CenterSerializer(data=i)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            print(serializer.errors)
+
+def traffic():
+    actions()

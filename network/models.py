@@ -81,6 +81,9 @@ class ToolDownload(models.Model):
 
 
 class Center(models.Model):
+    username = models.CharField(verbose_name='用户名',max_length=100,default='')
+    incoming = models.CharField(verbose_name='入口流量', max_length=100,default='')
+    outgoing = models.CharField(verbose_name='出口流量', max_length=100,default='')
     vpn_ip = models.GenericIPAddressField(verbose_name='VPN设备ip')
     uptime = models.CharField(verbose_name='在线时间', max_length=100, blank=False)
 

@@ -151,11 +151,17 @@ CELERY_IMPORTS = ('network.tasks')
 CELERY_TIMEZONE = 'Asia/Shanghai'
 
 app.conf.task_routes = {
-    'tasks.l2tp_vpn_scan': {'queue': 'l2tp_vpn_scan'}
+    'tasks.l2tp_vpn_scan': {'queue': 'l2tp_vpn_scan'},
+    'tasks.traffic': {'queue': 'traffic'}
 }
 CELERYBEAT_SCHEDULE = {
     'l2tp_vpn_scan': {
         "task": "network.tasks.l2tp_vpn_scan",
+        "schedule": timedelta(hours=1),
+        "args": ()
+    },
+    'traffic': {
+        "task": "network.tasks.master_traffic",
         "schedule": timedelta(hours=1),
         "args": ()
     },
