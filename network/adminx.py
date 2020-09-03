@@ -1,7 +1,7 @@
 import xadmin, paramiko, logging, re, json, socket
 
 from xadmin import views
-from network.models import RosRouter, UserManage, VPNInfo, Button, ToolDownload
+from network.models import RosRouter, UserManage, VPNInfo, Button, ToolDownload, Center
 from xadmin.models import UserWidget
 from network.serializers import UserWidgetSerializer
 from django.contrib.auth.models import User
@@ -210,47 +210,6 @@ class ButtonAdmin(object):
 
     def queryset(self):
         return Button.objects.filter(device=self.request.user.usermanage.device)
-    # def get_model_form(self, **kwargs):
-    #     obj = Button.objects.get(id=self.args[0])
-    #     if obj.name == '路由路径优化':
-    #         self.exclude = ['port', 'name']
-    #     elif obj.name == '开启设备接口':
-    #         self.exclude = ['ip', 'name', 'ip_export']
-    #     elif obj.name == '关闭设备接口':
-    #         self.exclude = ['ip', 'name', 'ip_export']
-    #     return super(ButtonAdmin, self).get_model_form(**kwargs)
-
-    # def post(self, request, *args, **kwargs):
-    #     """
-    #     保存表单数据。具体的程序执行流程为:
-    #
-    #         1. :meth:`prepare_form`
-    #
-    #         2. :meth:`instance_forms`
-    #
-    #             2.1 :meth:`get_form_datas`
-    #
-    #         3. :meth:`setup_forms`
-    #
-    #         4. :meth:`valid_forms`
-    #
-    #             4.1 :meth:`save_forms`
-    #
-    #             4.2 :meth:`save_models`
-    #
-    #             4.3 :meth:`save_related`
-    #
-    #             4.4 :meth:`post_response`
-    #     """
-    #     if hasattr(self,'instance_forms'):
-    #         self.instance_forms()
-    #         self.setup_forms()
-    #
-    #     if self.valid_forms():
-    #         self.save_forms()
-    #         self.save_models()
-    #         self.save_related()
-    #         return HttpResponseRedirect('/xadmin/network/button/')
 
 
 class ToolDownloadAdmin(object):
@@ -261,11 +220,16 @@ class ToolDownloadAdmin(object):
             super().get_response(*args, **kwargs)
 
 
+class CenterAdmin(object):
+    pass
+
+
 # 注册xadmin控制器和对应模型
 xadmin.site.register(VPNInfo, VPNAdmin)
 xadmin.site.register(RosRouter, RosRouterAdmin)
 xadmin.site.register(UserManage, UserAdmin)
 xadmin.site.register(Button, ButtonAdmin)
 xadmin.site.register(ToolDownload, ToolDownloadAdmin)
+xadmin.site.register(Center, CenterAdmin)
 xadmin.site.register(views.CommAdminView, GlobalSetting)
 xadmin.site.register(views.BaseAdminView, BaseSetting)

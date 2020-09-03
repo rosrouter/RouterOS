@@ -1,19 +1,24 @@
 from django.test import TestCase
-import os, django
+import os
+import django
+import paramiko
+import re
+import requests
+import json
+from django.conf import settings
+from x_network.utils.zabbix_client import ZabbixApi
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "x_network.settings")
-django.setup()
+
 # Create your tests here.
 
-import paramiko,re
-import requests,json
-from x_network.settings import Zabbixapi,zabbix,zabbix_header
 
 def action():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(hostname='218.1.3.254', port=22222,
-                username='zb', password='18017565515',
+    ssh.connect(hostname='218.1.3.254',
+                port=22222,
+                username='zb',
+                password='18017565515',
                 look_for_keys=False)
     command = '/ppp active print detail'
     _, res, _ = ssh.exec_command(command)
@@ -25,13 +30,13 @@ def action():
         res.append((name, i[2], i[-1]))
     resp = [dict(zip(('name', 'address', 'uptime'), i)) for i in res]
     return resp
-resp = action()
 
-token = Zabbixapi().token
 
 def actions():
+    token = ZabbixApi().token
+    resp = action()
     for i in resp:
-        key = ['ifHCInOctets[<%s>]'%i['name'],'ifHCOutOctets[<%s>]'%i['name']]
+        key = ['ifHCInOctets[<%s>]' % i['name'], 'ifHCOutOctets[<%s>]' % i['name']]
         for q in key:
             data = {
                 'jsonrpc': '2.0',
@@ -47,8 +52,10 @@ def actions():
                 'auth': token,
                 'id': 1
             }
-            u = requests.post(data=json.dumps(data), url=zabbix['URL'], headers=zabbix_header,
-                       timeout=300)
+            u = requests.post(data=json.dumps(data),
+                              url=settings.ZABBIX_URL,
+                              headers=settings.ZABBIX_HEADER,
+                              timeout=300)
             try:
                 itemid = json.loads(u.content)['result'][0]['itemid']
                 data = {
@@ -65,7 +72,9 @@ def actions():
                     'auth': token,
                     'id': 1
                 }
-                u = requests.post(data=json.dumps(data), url=zabbix['URL'], headers=zabbix_header,
+                u = requests.post(data=json.dumps(data),
+                                  url=settings.ZABBIX_URL,
+                                  headers=settings.ZABBIX_HEADER,
                                   timeout=300)
                 result = json.loads(u.content)['result'][0]['value']
                 if 'HCIn' in q:
@@ -76,4 +85,7 @@ def actions():
                 i['incoming'] = None
                 i['outgoing'] = None
         print(i)
-actions()
+
+
+if __name__ == '__main__':
+    actions()

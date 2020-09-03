@@ -248,33 +248,12 @@ CACHES = {
 }
 
 # ZABBIX API
-zabbix = {
-    'URL': 'http://122.51.39.93/zabbix/api_jsonrpc.php',
-}
-zabbix_header = {"Content-Type": "application/json"}
+ZABBIX_URL = 'http://122.51.39.93/zabbix/api_jsonrpc.php'
+ZABBIX_HEADER = {"Content-Type": "application/json"}
 TEST = 123
+
 try:
     # 会导入debug_setting里全部参数，遇到一样的参数就会覆盖 就像 a =1，a=2 最终a的值是2
     from x_network.debug_settings import *
 except ModuleNotFoundError:
     pass
-
-
-class Zabbixapi(object):
-
-    def __init__(self):
-        self.token = self.token()
-
-    def token(self):
-        import json, requests
-        data = {
-            "jsonrpc": "2.0",
-            "method": "user.login",
-            "params": {
-                "user": 'Admin',
-                "password": 'zabbix'},
-            "id": 1}
-        requests_token = requests.post(url=zabbix['URL'], data=json.dumps(data), headers=zabbix_header,
-                                       timeout=30)
-        token = json.loads(requests_token.content)["result"]
-        return token
