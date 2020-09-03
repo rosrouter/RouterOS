@@ -28,11 +28,9 @@ def action():
     return resp
 
 
-token = ZabbixApi.token
-resp = action()
-
-
-def actions():
+def update_center_data():
+    token = ZabbixApi().token
+    resp = action()
     for i in resp:
         key = ['ifHCInOctets[<%s>]'%i['username'],'ifHCOutOctets[<%s>]'%i['username']]
         for q in key:
@@ -50,7 +48,9 @@ def actions():
                 'auth': token,
                 'id': 1
             }
-            u = requests.post(data=json.dumps(data), url=settings.ZABBIX_URL, headers=settings.ZABBIX_HEADER,
+            u = requests.post(data=json.dumps(data),
+                              url=settings.ZABBIX_URL,
+                              headers=settings.ZABBIX_HEADER,
                               timeout=300)
             try:
                 itemid = json.loads(u.content)['result'][0]['itemid']
@@ -88,7 +88,3 @@ def actions():
             serializer.save()
         else:
             print(serializer.errors)
-
-
-def traffic():
-    actions()
