@@ -24,7 +24,7 @@ def action():
     for i in data_re:
         name = i[1] + '-' + i[0]
         res.append((name, i[2], i[-1]))
-    resp = [dict(zip(('name', 'address', 'uptime'), i)) for i in res]
+    resp = [dict(zip(('username', 'vpn_ip', 'uptime'), i)) for i in res]
     return resp
 
 
@@ -34,7 +34,7 @@ resp = action()
 
 def actions():
     for i in resp:
-        key = ['ifHCInOctets[<%s>]' % i['name'], 'ifHCOutOctets[<%s>]' % i['name']]
+        key = ['ifHCInOctets[<%s>]'%i['username'],'ifHCOutOctets[<%s>]'%i['username']]
         for q in key:
             data = {
                 'jsonrpc': '2.0',
@@ -76,11 +76,11 @@ def actions():
                 if 'HCOut' in q:
                     i['outgoing'] = str(result) + 'bps'
             except:
-                i['incoming'] = None
-                i['outgoing'] = None
+                i['incoming'] = 'isNone'
+                i['outgoing'] = 'isNone'
         # print(i)
         try:
-            username = Center.objects.get(username=i['name'])
+            username = Center.objects.get(username=i['username'])
             serializer = CenterSerializer(username, data=i)
         except:
             serializer = CenterSerializer(data=i)

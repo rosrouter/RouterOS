@@ -28,7 +28,7 @@ def action():
     for i in data_re:
         name = i[1] + '-' + i[0]
         res.append((name, i[2], i[-1]))
-    resp = [dict(zip(('name', 'address', 'uptime'), i)) for i in res]
+    resp = [dict(zip(('username', 'vpn_ip', 'uptime'), i)) for i in res]
     return resp
 
 
@@ -36,7 +36,7 @@ def actions():
     token = ZabbixApi().token
     resp = action()
     for i in resp:
-        key = ['ifHCInOctets[<%s>]' % i['name'], 'ifHCOutOctets[<%s>]' % i['name']]
+        key = ['ifHCInOctets[<%s>]'%i['username'],'ifHCOutOctets[<%s>]'%i['username']]
         for q in key:
             data = {
                 'jsonrpc': '2.0',
