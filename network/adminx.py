@@ -221,6 +221,7 @@ class ToolDownloadAdmin(object):
 
 
 class CenterAdmin(object):
+    list_display = ['username', 'incoming', 'outgoing', 'vpn_ip', 'uptime']
     pass
 
 
