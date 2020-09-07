@@ -3,12 +3,16 @@ from xadmin.models import UserWidget, UserSettings
 from network.serializers import UserWidgetSerializer
 from django.contrib.auth.models import User
 
+
 class LoginMiddleware(MiddlewareMixin):
     @staticmethod
     def process_request(request):
         # 展示首页的时候进行检查
         if request.method == 'GET' and request.path == '/xadmin/' and request.user.id is not None:
             html_str = f"<img src=\"http://49.235.114.108:{request.META['SERVER_PORT']}/network/image/\" width=\"1200\" height=\"600\" title=\"流量图\">"
+            # root用户不展示
+            if request.user.username == 'root':
+                return None
             # 检查对应的widget是否和请求端口一致
             widget = UserWidget.objects.filter(user=request.user, page_id='home', widget_type='html')
             user_settings = UserSettings.objects.filter(user=request.user)
