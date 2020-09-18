@@ -44,11 +44,26 @@ def route(ros_ip, ros_user, ros_pwd, dstroute, nexthop, self):
     command = '/ip route add  dst-address=%s gateway=%s' % (dstroute, nexthop)
     stdin, stdout, stderr = ssh.exec_command(command)
     res = str(stdout.read(), 'utf-8')
-    if 'invalid value' in res or not res:
+    if 'invalid value' in res:
         self.message_user(u'下一跳接口未被创建，配置下发失败!', 'error')
         ssh.close()
         return 'fail'
     self.message_user(u'路由下发成功!', 'success')
+    ssh.close()
+
+def delete_route(ip, ros_user, ros_pwd, command, router):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(hostname=ip, port=22,
+                username=ros_user, password=ros_pwd,
+                look_for_keys=False)
+    _, res, _ = ssh.exec_command(command)
+    result = str(res.read(), encoding='cp1252').strip().split('\n')
+    for i in result:
+        if router in i:
+            num = i.strip().split(' ')[0]
+            print(num)
+            ssh.exec_command('/ip route remove %s' % num)
     ssh.close()
 
 
@@ -78,6 +93,7 @@ def deletes(ros_ip, ros_user, ros_pwd, command, vpn_user):
                 look_for_keys=False)
     stdin, stdout, stderr = ssh.exec_command(command)
     res = str(stdout.read(), 'utf-8')
+    print(res)
     for i in res.split('\n')[2:]:
         item = re.split(r' +', i.strip())
         if vpn_user == item[1]:
@@ -191,7 +207,6 @@ class ButtonAdmin(object):
             ros_user = self.request.user.usermanage.device.ros_user
             ros_passwd = self.request.user.usermanage.device.ros_pwd
             reip = re.compile(r'\d*[.]\d*[.]\d*[.]\d*[/][\d+]')
-            print(ros_passwd)
             if reip.search(routeip):
                 msg = route(ros_ip, ros_user, ros_passwd, routeip, nexthop, self)
             else:
@@ -207,6 +222,14 @@ class ButtonAdmin(object):
             super(ButtonAdmin, self).save_models()
         except IntegrityError:
             self.message_user('当前添加的ip已经在库内存在', 'error')
+
+    def delete_model(self):
+        obj = self.obj
+        ros = obj.device
+        command = '/ip route print brief'
+        print(ros.ip, ros.ros_user, ros.ros_pwd, command, obj.ip)
+        delete_route(ros.ip, ros.ros_user, ros.ros_pwd, command, obj.ip)
+        super(ButtonAdmin, self).delete_model()
 
     def queryset(self):
         return Button.objects.filter(device=self.request.user.usermanage.device)
